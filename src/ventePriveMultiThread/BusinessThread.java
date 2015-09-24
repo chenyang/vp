@@ -1,8 +1,11 @@
 package ventePriveMultiThread;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -11,6 +14,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import org.jsoup.Connection;
+import org.jsoup.Connection.Method;
+import org.jsoup.Connection.Response;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -32,7 +37,7 @@ public class BusinessThread implements Runnable{
 			//do business
 			startBusiness();
 		} catch (Exception e) {
-			System.err.println("FATAL ERROR in calling analyzeCategory: "+e.getCause().toString());
+			e.printStackTrace();
 		}
 	}
 	
@@ -68,7 +73,7 @@ public class BusinessThread implements Runnable{
 		executor.shutdown();
 		executor.awaitTermination(60, TimeUnit.SECONDS);
 		//finally
-		//System.out.println("  CategoryUrlCriblerThread ends");
+		//System.out.println("CategoryUrlCriblerThread ends");
 	}
 
 	/**
