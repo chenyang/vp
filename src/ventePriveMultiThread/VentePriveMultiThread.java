@@ -11,7 +11,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-public class VentePrive {
+public class VentePriveMultiThread {
 	//46348, andre
 	//46865, DC
 	//47466, test
@@ -44,11 +44,11 @@ public class VentePrive {
 			executor.awaitTermination(60, TimeUnit.SECONDS);
 
 		}catch (InterruptedException e) {
-			System.err.println("FATAL ERROR in calling BusinessThread:"+e.getCause().toString());
+			System.err.println("!!FATAL ERROR in calling BusinessThread:"+e.getCause().toString());
 		} catch (IOException e) {
-			System.err.println("FATAL ERROR in calling BusinessThread:"+e.getCause().toString());
+			System.err.println("!!FATAL ERROR in calling BusinessThread:"+e.getCause().toString());
 		} catch (ExecutionException e) {
-			System.err.println("FATAL ERROR in calling BusinessThread:"+e.getCause().toString());
+			System.err.println("!!FATAL ERROR in calling BusinessThread:"+e.getCause().toString());
 		}finally{
 			System.out.println("  In cart, we have "+SingletonShare.getInstance().getBoughtItems().size()+" items bought");
 			System.out.println("  SYSTEM ENDS: "+new Date());
@@ -72,7 +72,7 @@ public class VentePrive {
 					}
 				}
 			} catch (Exception e) {
-				System.err.println("FATAL ERROR in count down:"+e.getCause().toString());
+				System.err.println("!!FATAL ERROR in count down:"+e.getCause().toString());
 			}
 		}
 	}

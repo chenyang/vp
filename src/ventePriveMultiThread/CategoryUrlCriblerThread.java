@@ -41,9 +41,9 @@ public class CategoryUrlCriblerThread implements Runnable{
 			futures.add(executor.submit(worker));
 		}
 		//halt execution until the ExecutorService has processed all of the Runnable tasks
-		/*for (Future<?> future:futures) {
+		for (Future<?> future:futures) {
 			future.get();
-		}*/
+		}
 		executor.shutdown();
 		executor.awaitTermination(60, TimeUnit.SECONDS);
 		//finally

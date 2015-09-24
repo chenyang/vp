@@ -60,10 +60,10 @@ public class ArticleUrlCriblerThread implements Runnable{
 			pfid = mapper.getPfid();
 
 			//mock
-			//SingletonShare.getInstance().addOneItemToBoughtItems(mapper);			
+			SingletonShare.getInstance().addOneItemToBoughtItems(mapper);			
 
 			//real call ws to buy items
-			callWsToBuyItem(mapper, pid, pfid);
+			//callWsToBuyItem(mapper, pid, pfid);
 		}
 	}
 
@@ -106,10 +106,10 @@ public class ArticleUrlCriblerThread implements Runnable{
 				System.out.println(builder);
 			}
 		}catch(IOException e){
-			System.out.println("IOEXCEPTION: "+ e.toString()+" [PFID="+mapper.getPfid()+", PID="+mapper.getPid()+"]");
+			System.out.println("  IOEXCEPTION: "+ e.toString()+" [PFID="+mapper.getPfid()+", PID="+mapper.getPid()+"]");
 		}catch(InterruptedException e){
-			Thread.currentThread().interrupt(); // Reset interrupted status
-			System.out.println("INTERRUPTED EXCEPTION: "+ e.toString()+" [PFID="+mapper.getPfid()+", PID="+mapper.getPid()+"]");
+			//Thread.currentThread().interrupt(); // Reset interrupted status
+			System.out.println("  INTERRUPTED EXCEPTION: "+ e.toString()+" [PFID="+mapper.getPfid()+", PID="+mapper.getPid()+"]");
 		}
 	}
 
@@ -118,7 +118,7 @@ public class ArticleUrlCriblerThread implements Runnable{
 		try {
 			analyzePageExpressElements();
 		} catch (IOException e) {
-			System.out.println("CONNECTION PRB"+ e.toString());
+			System.out.println("  CONNECTION PRB in analysePageExpress: "+ e.getCause().toString());
 		}
 	}
 }

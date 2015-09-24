@@ -20,8 +20,8 @@ public class SingletonShare {
 	public static final int SLEEP_ERROR = 1000*30;//30s
 	public static final String urlIncreseItem = "https://secure.fr.vente-privee.com/cart/Widgets/Cart/IncreaseProductQuantity";
 	public static final String urlDecreaseItem = "https://secure.fr.vente-privee.com/cart/Widgets/Cart/DecreaseProductQuantity";
-	public static final int THREADPOOL_FOR_CATEGORY = 20;
-	public static final int THREADPOOL_FOR_ARTICLE = 400;
+	public static final int THREADPOOL_FOR_CATEGORY = 5;
+	public static final int THREADPOOL_FOR_ARTICLE = 20;
 	public static final int THREADPOOL_FOR_MARK = 4; //by default, 4 threads
 	public static final int SLEEP_COUNTDOWN_SMALL = 5000;//5 seds
 	public static final int SLEEP_COUNTDOWN_BIG = 1000*60*5;//each 5 mins
