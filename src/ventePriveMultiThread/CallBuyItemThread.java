@@ -74,7 +74,7 @@ public class CallBuyItemThread implements Runnable{
 				}
 				System.out.println(strOut);
 			}catch(IOException e){
-				System.out.println("  IOEXCEPTION call WS [PID="+pid+", PFID="+pfid+"]: "+ e.getCause().toString());
+				System.out.println("  IOEXCEPTION call WS [PID="+pid+", PFID="+pfid+"]: "+ e.toString());
 				//callWsToBuyItem(MapperPidPfid mapper, String pid, String pfid);
 			}
 		}
