@@ -1,36 +1,37 @@
 package ventePriveMultiThread;
 
 import java.io.IOException;
-import java.net.SocketTimeoutException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Map.Entry;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
-import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
 public class ArticleUrlCriblerThread implements Runnable{
 
 	private Element artEl;
 	private String markCode;
-	
+
 	public ArticleUrlCriblerThread(Element el, String markCode){
 		this.artEl = el;
 		this.markCode = markCode;
 	}
-	
-	private void analyzePageExpressElements() throws IOException{
+
+	private void analyzePageExpressElements() throws IOException, InterruptedException, ExecutionException{
 		String href4Express = artEl.select(".infoExpressBt").attr("hrefExpress");
 		String[] temps = href4Express.split("/");
 		String pfid = temps[temps.length-1]; // get product family id
 		//System.out.println("  "+href4Express+", "+pfid);
-		
+
 		//this block take some time..
 		//element express page
 		Document typeOneExpressPage = Jsoup.connect("http://fr.vente-privee.com"+href4Express).get();
@@ -54,66 +55,27 @@ public class ArticleUrlCriblerThread implements Runnable{
 		}
 
 		//add to panier
+		ExecutorService executor = Executors.newFixedThreadPool(SingletonShare.THREADPOOL_FOR_CATEGORY);
+		Collection<Future<?>> futures = new LinkedList<Future<?>>();
 		for(MapperPidPfid mapper: listMapper){
 			mapper.setMarkCode(markCode);
 			String pid = mapper.getPid();
 			pfid = mapper.getPfid();
-			
-			//mock
-			//SingletonShare.getInstance().addOneItemToBoughtItems(mapper);			
-			
-			//real call ws to buy items
-			callWsToBuyItem(mapper, pid, pfid);
-			
-		}
-	}
-	
-	private void callWsToBuyItem(MapperPidPfid mapper, String pid, String pfid){
-		//REAL invoke ws call
-		if(!pid.equals(pfid)){ //just when PID!=PFID
-			try{
-				StringBuffer strOut = new StringBuffer();
-				strOut.append("  Analyzed Mapping: PID="+pid+", PFID="+pfid+", MARK code="+markCode+"; ");
-				strOut.append("  Waiting for "+(SingletonShare.SLEEP_BUY)+" mills to call VP ws..;  ");
-				Thread.sleep(SingletonShare.SLEEP_BUY);
-				Connection connection = Jsoup.connect("http://fr.vente-privee.com/cart/CartServices/AddToCartOrCanBeReopened");
-				for (Entry<String, String> cookie : SingletonShare.getInstance().getLoginCookies().entrySet()) {
-					connection.cookie(cookie.getKey(), cookie.getValue());
-				}
-				Document doc = 
-						connection
-						.data("pid", pid)
-						.data("pfid", pfid)
-						.data("q", "1")
-						.ignoreContentType(true)
-						.post();
-				
-				if(!doc.body().text().isEmpty()){
-					JsonParser parser = new JsonParser();
-					JsonObject o = (JsonObject)parser.parse(doc.body().text());
-					String desc = o.get("Description").toString();
 
-					if(desc.toLowerCase().contains("success")){//if succeed to buy item
-						//add one bought item
-						SingletonShare.getInstance().getBoughtItems().add(mapper);
-						strOut.append("added to bought items in panier:[PID="+pid+",PFID="+pfid+"]; ");
-					}else{
-						strOut.append("Sold out or system error;  ");
-					}
-					strOut.append("SERVER RESPONSE:"+doc.body().text()+";");
-				}else{
-					strOut.append("NO SERVER RESPONSE..");
-				}
-				System.out.println(strOut);
-			}catch(IOException e){
-				System.out.println("  IOEXCEPTION call WS [PID="+pid+", PFID="+pfid+"]: "+ e.getCause().toString());
-				//callWsToBuyItem(MapperPidPfid mapper, String pid, String pfid);
-			}catch(InterruptedException e){
-				System.out.println("  InterruptedException [PID="+pid+", PFID="+pfid+"]: "+ e.getCause().toString());
-			}
+			Runnable worker= new CallBuyItemThread(markCode, pid, pfid, mapper);
+			futures.add(executor.submit(worker));	
 		}
+		//halt execution until the ExecutorService has processed all of the Runnable tasks
+		for (Future<?> future:futures) {
+			future.get();
+		}
+		executor.shutdown();
+		executor.awaitTermination(60, TimeUnit.SECONDS);
+
 	}
-	
+
+
+
 	@Override
 	public void run() {
 		try{
