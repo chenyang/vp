@@ -5,17 +5,19 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.jsoup.Jsoup;
 import org.jsoup.Connection.Method;
 import org.jsoup.Connection.Response;
 
 public class SingletonShare {
-	private List<MapperPidPfid> boughtItems;
+	private Queue<MapperPidPfid> boughtItems;
 	private Map<String, String> loginCookies;
 
-	public static final int SLEEP_BUY = 5; //buy gap..
+	public static final int SLEEP_BUY = 1; //buy gap..
 	public static final int SLEEP_STUCKER = 1000*60;// 1 Min
 	public static final int SLEEP_ERROR = 1000*30;//30s
 	public static final String urlIncreseItem = "https://secure.fr.vente-privee.com/cart/Widgets/Cart/IncreaseProductQuantity";
@@ -44,7 +46,7 @@ public class SingletonShare {
 	}
 
 	private SingletonShare(){
-		boughtItems =  Collections.synchronizedList(new ArrayList<MapperPidPfid>());
+		boughtItems =  new ConcurrentLinkedQueue<MapperPidPfid>();
 		setLoginCookies(new ConcurrentHashMap <String, String>());
 	}
 
@@ -56,11 +58,11 @@ public class SingletonShare {
 		return Loader.INSTANCE;
 	}
 
-	public List<MapperPidPfid> getBoughtItems() {
+	public Queue<MapperPidPfid> getBoughtItems() {
 		return boughtItems;
 	}
 
-	public void setBoughtItems(List<MapperPidPfid> boughtItems) {
+	public void setBoughtItems(Queue<MapperPidPfid> boughtItems) {
 		this.boughtItems = boughtItems;
 	}
 

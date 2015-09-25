@@ -34,10 +34,9 @@ public class BusinessThread implements Runnable{
 	@Override
 	public void run() {
 		try {
-			//do business
 			startBusiness();
 		} catch (Exception e) {
-			e.printStackTrace();
+			System.err.println("FATAL ERROR analysePageCategories:" +e.getCause().toString());
 		}
 	}
 	
@@ -90,7 +89,7 @@ public class BusinessThread implements Runnable{
 		SingletonShare.getInstance().loginPhase();
 
 		if(!SingletonShare.getInstance().getBoughtItems().isEmpty()){
-			MapperPidPfid mapper = SingletonShare.getInstance().getBoughtItems().get(0);
+			MapperPidPfid mapper = SingletonShare.getInstance().getBoughtItems().peek();
 			//increase 1 item
 			System.out.println("  Waiting for "+(SingletonShare.SLEEP_STUCKER/1000)+" seds to increase item to keep alive session..");
 			Thread.sleep(SingletonShare.SLEEP_STUCKER);

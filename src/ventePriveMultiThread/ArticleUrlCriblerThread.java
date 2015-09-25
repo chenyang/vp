@@ -54,17 +54,16 @@ public class ArticleUrlCriblerThread implements Runnable{
 		}
 
 		//add to panier
-		
 		for(MapperPidPfid mapper: listMapper){
 			mapper.setMarkCode(markCode);
 			String pid = mapper.getPid();
 			pfid = mapper.getPfid();
 			
 			//mock
-			SingletonShare.getInstance().addOneItemToBoughtItems(mapper);			
+			//SingletonShare.getInstance().addOneItemToBoughtItems(mapper);			
 			
 			//real call ws to buy items
-			//callWsToBuyItem(mapper, pid, pfid);
+			callWsToBuyItem(mapper, pid, pfid);
 			
 		}
 	}
@@ -73,8 +72,9 @@ public class ArticleUrlCriblerThread implements Runnable{
 		//REAL invoke ws call
 		if(!pid.equals(pfid)){ //just when PID!=PFID
 			try{
-				System.out.print("  Analyzed Mapping: PID="+pid+", PFID="+pfid+", MARK code="+markCode+"; ");
-				System.out.print("  Waiting for "+(SingletonShare.SLEEP_BUY)+" mills to call VP ws..;  ");
+				StringBuffer strOut = new StringBuffer();
+				strOut.append("  Analyzed Mapping: PID="+pid+", PFID="+pfid+", MARK code="+markCode+"; ");
+				strOut.append("  Waiting for "+(SingletonShare.SLEEP_BUY)+" mills to call VP ws..;  ");
 				Thread.sleep(SingletonShare.SLEEP_BUY);
 				Connection connection = Jsoup.connect("http://fr.vente-privee.com/cart/CartServices/AddToCartOrCanBeReopened");
 				for (Entry<String, String> cookie : SingletonShare.getInstance().getLoginCookies().entrySet()) {
@@ -96,20 +96,20 @@ public class ArticleUrlCriblerThread implements Runnable{
 					if(desc.toLowerCase().contains("success")){//if succeed to buy item
 						//add one bought item
 						SingletonShare.getInstance().getBoughtItems().add(mapper);
-						System.out.print("added to bought items in panier:[PID="+pid+",PFID="+pfid+"]; ");
+						strOut.append("added to bought items in panier:[PID="+pid+",PFID="+pfid+"]; ");
 					}else{
-						System.out.print("Sold out or system error;  ");
+						strOut.append("Sold out or system error;  ");
 					}
-					System.out.print("SERVER RESPONSE:"+doc.body().text()+";");
+					strOut.append("SERVER RESPONSE:"+doc.body().text()+";");
 				}else{
-					System.out.print("NO SERVER RESPONSE..");
+					strOut.append("NO SERVER RESPONSE..");
 				}
-				System.out.println();
+				System.out.println(strOut);
 			}catch(IOException e){
-				System.out.println("IOEXCEPTION: "+ e.toString());
+				System.out.println("  IOEXCEPTION call WS [PID="+pid+", PFID="+pfid+"]: "+ e.getCause().toString());
 				//callWsToBuyItem(MapperPidPfid mapper, String pid, String pfid);
 			}catch(InterruptedException e){
-				e.printStackTrace();
+				System.out.println("  InterruptedException [PID="+pid+", PFID="+pfid+"]: "+ e.getCause().toString());
 			}
 		}
 	}
@@ -119,7 +119,7 @@ public class ArticleUrlCriblerThread implements Runnable{
 		try{
 			analyzePageExpressElements();
 		}catch(Exception e){
-			e.printStackTrace();
+			System.err.println("FATAL ERROR analyzePageExpress:" +e.getCause().toString());
 		}
 	}
 
