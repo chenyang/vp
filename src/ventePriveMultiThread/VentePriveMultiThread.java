@@ -52,11 +52,8 @@ public class VentePriveMultiThread {
 			executor.shutdown();
 			executor.awaitTermination(60, TimeUnit.SECONDS);
 
-		}catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (ExecutionException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
+		}catch (InterruptedException | ExecutionException | IOException e) {
+			System.err.println("FATAL ERROR in calling main Business Thread: " +e.toString());
 			e.printStackTrace();
 		}finally{
 			System.out.println("  In cart, we have "+SingletonShare.getInstance().getBoughtItems().size()+" items bought");

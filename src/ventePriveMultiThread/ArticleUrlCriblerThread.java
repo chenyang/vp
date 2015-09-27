@@ -78,11 +78,11 @@ public class ArticleUrlCriblerThread implements Runnable{
 
 	@Override
 	public void run() {
-		try{
+		try {
 			analyzePageExpressElements();
-		}catch(Exception e){
-			System.err.println("FATAL ERROR analyzePageExpress:" +e.getCause().toString());
-		}
+		} catch (IOException | InterruptedException| ExecutionException e) {
+			System.err.println("FATAL ERROR in calling analyzePageExpressElements: " +e.toString());
+		} 
 	}
 
 }

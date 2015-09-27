@@ -55,7 +55,8 @@ public class CategoryUrlCriblerThread implements Runnable{
 		try {
 			analyzePageArticlesElements();
 		} catch (InterruptedException | IOException | ExecutionException e) {
-			System.err.println("FATAL ERROR analyzePageArticle Thread:" +e.getCause().toString());
+			System.err.println("FATAL ERROR in calling analyzePageArticlesElements: " +e.toString());
+			e.printStackTrace();
 		}
 	}
 }

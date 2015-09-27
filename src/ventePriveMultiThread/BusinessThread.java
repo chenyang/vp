@@ -30,8 +30,9 @@ public class BusinessThread implements Runnable{
 	public void run() {
 		try {
 			startBusiness();
-		} catch (Exception e) {
-			System.err.println("FATAL ERROR analysePageCategories:" +e.getCause().toString());
+		} catch (IOException | InterruptedException | ExecutionException e) {
+			System.err.println("FATAL ERROR in calling analyzePageCaterogiesElements: " +e.toString());
+			e.printStackTrace();
 		}
 	}
 	
