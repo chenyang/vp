@@ -52,25 +52,26 @@ public class BusinessThread implements Runnable{
 
 	private void analyzePageCaterogiesElements(String markCode, String productTypeCatgory) throws IOException, InterruptedException, ExecutionException{
 		String visitedUrl = "http://fr.vente-privee.com/catalog/"+productTypeCatgory+"/Operation/"+markCode+"/site/1";
-		logger.info("--Analyzing url: "+visitedUrl+" ..");
+		logger.info("Analyzing url: "+visitedUrl+" ..");
 		Document typeOneMainPage = Jsoup.connect(visitedUrl).get();
 		//Mark's category page
 		Elements lists = typeOneMainPage.select(".menuEV_Container >li");
-
-		ExecutorService executor = Executors.newFixedThreadPool(SingletonShare.THREADPOOL_FOR_CATEGORY);
-		Collection<Future<?>> futures = new LinkedList<Future<?>>();
-		for(Element el : lists){
-			Runnable worker= new CategoryUrlCriblerThread(el, markCode);
-			futures.add(executor.submit(worker));
+		if(!lists.isEmpty()){
+			ExecutorService executor = Executors.newFixedThreadPool(SingletonShare.THREADPOOL_FOR_CATEGORY);
+			Collection<Future<?>> futures = new LinkedList<Future<?>>();
+			for(Element el : lists){
+				Runnable worker= new CategoryUrlCriblerThread(el, markCode);
+				futures.add(executor.submit(worker));
+			}
+			//halt execution until the ExecutorService has processed all of the Runnable tasks
+			for (Future<?> future:futures) {
+				future.get();
+			}
+			executor.shutdown();
+			executor.awaitTermination(60, TimeUnit.SECONDS);
+		}else{
+			logger.warn("Category page has nothing..");
 		}
-		//halt execution until the ExecutorService has processed all of the Runnable tasks
-		for (Future<?> future:futures) {
-			future.get();
-		}
-		executor.shutdown();
-		executor.awaitTermination(60, TimeUnit.SECONDS);
-		//finally
-		//out.println("CategoryUrlCriblerThread ends");
 	}
 
 	/**
@@ -81,7 +82,7 @@ public class BusinessThread implements Runnable{
 	 * @throws Exception 
 	 */	
 	private void stuckTimer() throws InterruptedException, IOException, ExecutionException{
-		logger.info("--Staring stuck timer..");
+		logger.info("Staring stuck timer..");
 		Connection connection;
 		/** login again **/
 		SingletonShare.getInstance().loginPhase();
@@ -118,7 +119,7 @@ public class BusinessThread implements Runnable{
 			.ignoreContentType(true)
 			.post();
 		}else{
-			logger.warn("--BUSINESS ERROR NO ITEMS CAN BE FOUND, will wait for "+(SingletonShare.SLEEP_ERROR/1000)+" seds and restart..");
+			logger.warn("BUSINESS ERROR NO ITEMS CAN BE FOUND, will wait for "+(SingletonShare.SLEEP_ERROR/1000)+" seds and restart..");
 			Thread.sleep(SingletonShare.SLEEP_ERROR);
 			//restartBusiness until success
 			startBusiness();

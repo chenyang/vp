@@ -37,21 +37,22 @@ public class CategoryUrlCriblerThread implements Runnable{
 		typeOneArticlePage = Jsoup.connect("http://fr.vente-privee.com"+href4Article).get();
 		//Category's element page
 		Elements artList = typeOneArticlePage.select(".artList >li");
-
-		ExecutorService executor = Executors.newFixedThreadPool(SingletonShare.THREADPOOL_FOR_ARTICLE);
-		Collection<Future<?>> futures = new LinkedList<Future<?>>();
-		for(Element el : artList){
-			Runnable worker= new ArticleUrlCriblerThread(el, this.markCode);
-			futures.add(executor.submit(worker));
+		if(!artList.isEmpty()){
+			ExecutorService executor = Executors.newFixedThreadPool(SingletonShare.THREADPOOL_FOR_ARTICLE);
+			Collection<Future<?>> futures = new LinkedList<Future<?>>();
+			for(Element el : artList){
+				Runnable worker= new ArticleUrlCriblerThread(el, this.markCode);
+				futures.add(executor.submit(worker));
+			}
+			//halt execution until the ExecutorService has processed all of the Runnable tasks
+			for (Future<?> future:futures) {
+				future.get();
+			}
+			executor.shutdown();
+			executor.awaitTermination(60, TimeUnit.SECONDS);
+		}else{
+			logger.warn("Article list page has nothing..");
 		}
-		//halt execution until the ExecutorService has processed all of the Runnable tasks
-		for (Future<?> future:futures) {
-			future.get();
-		}
-		executor.shutdown();
-		executor.awaitTermination(60, TimeUnit.SECONDS);
-		//finally
-		logger.debug("ArticleUrlCriblerThread ends");
 	}
 
 	@Override

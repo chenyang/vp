@@ -58,24 +58,27 @@ public class ArticleUrlCriblerThread implements Runnable{
 			listMapper.add(mapper);
 		}
 
-		//add to panier
-		ExecutorService executor = Executors.newFixedThreadPool(SingletonShare.THREADPOOL_FOR_CATEGORY);
-		Collection<Future<?>> futures = new LinkedList<Future<?>>();
-		for(MapperPidPfid mapper: listMapper){
-			mapper.setMarkCode(markCode);
-			String pid = mapper.getPid();
-			pfid = mapper.getPfid();
+		if(!listMapper.isEmpty()){
+			//add to panier
+			ExecutorService executor = Executors.newFixedThreadPool(SingletonShare.THREADPOOL_FOR_CATEGORY);
+			Collection<Future<?>> futures = new LinkedList<Future<?>>();
+			for(MapperPidPfid mapper: listMapper){
+				mapper.setMarkCode(markCode);
+				String pid = mapper.getPid();
+				pfid = mapper.getPfid();
 
-			Runnable worker= new CallBuyItemThread(markCode, pid, pfid, mapper);
-			futures.add(executor.submit(worker));	
+				Runnable worker= new CallBuyItemThread(markCode, pid, pfid, mapper);
+				futures.add(executor.submit(worker));	
+			}
+			//halt execution until the ExecutorService has processed all of the Runnable tasks
+			for (Future<?> future:futures) {
+				future.get();
+			}
+			executor.shutdown();
+			executor.awaitTermination(60, TimeUnit.SECONDS);
+		}else{
+			logger.warn("Express for article has nothing.. Not able to add items..");
 		}
-		//halt execution until the ExecutorService has processed all of the Runnable tasks
-		for (Future<?> future:futures) {
-			future.get();
-		}
-		executor.shutdown();
-		executor.awaitTermination(60, TimeUnit.SECONDS);
-
 	}
 
 

@@ -68,7 +68,7 @@ public class VentePriveMultiThread {
 				if(currentDateTime-targetDateTime>0){
 					break;
 				}else{
-					logger.info((new Date().toString())+"--SYSTEM COUNT DOWN IN "+(targetDateTime-currentDateTime)/1000+" SECONDS..");
+					logger.info("SYSTEM COUNT DOWN IN "+(targetDateTime-currentDateTime)/1000+" SECONDS..");
 					if((targetDateTime-currentDateTime)/1000<60){ //less than 1 min
 						Thread.sleep(SingletonShare.SLEEP_COUNTDOWN_SMALL);
 					}else{
