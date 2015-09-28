@@ -52,8 +52,7 @@ public class VentePriveMultiThread {
 			executor.awaitTermination(60, TimeUnit.SECONDS);
 
 		}catch (InterruptedException | ExecutionException | IOException e) {
-			logger.error("FATAL ERROR in calling main Business Thread: " +e.toString());
-			logger.error("stack trace: ", e);
+			logger.error("FATAL ERROR in calling main Business Thread", e);
 		}finally{
 			logger.info("In cart, we have "+SingletonShare.getInstance().getBoughtItems().size()+" items bought");
 			logger.info("SYSTEM ENDS: "+new Date());
@@ -77,7 +76,7 @@ public class VentePriveMultiThread {
 					}
 				}
 			} catch (Exception e) {
-				logger.error("stack trace: ", e);
+				logger.error("Fatal Error in startCountDown", e);
 			}
 		}
 	}

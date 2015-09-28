@@ -36,7 +36,7 @@ public class CallBuyItemThread implements Runnable{
 			//real buy
 			callWsToBuyItem(markCode, mapper, pid, pfid);
 		} catch (IOException e) {
-			logger.error("FATAL ERROR in calling callWsToBuyItem: " +e.toString());
+			logger.error("FATAL ERROR in calling callWsToBuyItem", e.toString());
 		}
 	}
 

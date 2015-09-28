@@ -59,8 +59,7 @@ public class CategoryUrlCriblerThread implements Runnable{
 		try {
 			analyzePageArticlesElements();
 		} catch (InterruptedException | IOException | ExecutionException e) {
-			logger.error("FATAL ERROR in calling analyzePageArticlesElements: " +e.toString());
-			logger.error("stack trace: ", e);
+			logger.error("FATAL ERROR in calling analyzePageArticlesElements", e);
 		}
 	}
 }

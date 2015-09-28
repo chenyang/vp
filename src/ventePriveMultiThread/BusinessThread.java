@@ -35,8 +35,7 @@ public class BusinessThread implements Runnable{
 		try {
 			startBusiness();
 		} catch (IOException | InterruptedException | ExecutionException e) {
-			logger.error("FATAL ERROR in calling analyzePageCaterogiesElements: " +e.toString());
-			logger.error("stack trace: ", e);
+			logger.error("FATAL ERROR in calling analyzePageCaterogiesElements", e);
 		}
 	}
 	
@@ -53,8 +52,7 @@ public class BusinessThread implements Runnable{
 
 	private void analyzePageCaterogiesElements(String markCode, String productTypeCatgory) throws IOException, InterruptedException, ExecutionException{
 		String visitedUrl = "http://fr.vente-privee.com/catalog/"+productTypeCatgory+"/Operation/"+markCode+"/site/1";
-		logger.info("--Analysising url...");
-		logger.info("  "+visitedUrl);
+		logger.info("--Analyzing url: "+visitedUrl+" ..");
 		Document typeOneMainPage = Jsoup.connect(visitedUrl).get();
 		//Mark's category page
 		Elements lists = typeOneMainPage.select(".menuEV_Container >li");

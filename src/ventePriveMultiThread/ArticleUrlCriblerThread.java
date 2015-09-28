@@ -85,7 +85,7 @@ public class ArticleUrlCriblerThread implements Runnable{
 		try {
 			analyzePageExpressElements();
 		} catch (IOException | InterruptedException| ExecutionException e) {
-			logger.error("FATAL ERROR in calling analyzePageExpressElements: " +e.toString());
+			logger.error("FATAL ERROR in calling analyzePageExpressElements", e.toString());
 		} 
 	}
 
