@@ -12,6 +12,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import org.jsoup.Jsoup;
 import org.jsoup.Connection.Method;
 import org.jsoup.Connection.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SingletonShare {
 	private Queue<MapperPidPfid> boughtItems;
@@ -32,17 +34,21 @@ public class SingletonShare {
 	public static final String targetDateStr = "2015-09-22 07:00:30";
 	public static final String email ="chenyanggao123@gmail.com";
 	public static final String password ="Pol00ql5!123";
+	
+	private Logger logger;
 
 	
 	public void loginPhase() throws IOException{
+		logger = LoggerFactory.getLogger(SingletonShare.class);
+		
 		/**  Login phase **/
-		System.out.println("  SYSTEM LOGGING..");
+		logger.info("SYSTEM LOGGING..");
 		Response response = Jsoup.connect("https://secure.fr.vente-privee.com/authentication/Portal/FR")
 				.data("Email", SingletonShare.email)
 				.data("Password", SingletonShare.password)
 				.method(Method.POST).execute();
 		SingletonShare.getInstance().setLoginCookies(response.cookies()); 
-		System.out.println("  SYSTEM LOGGED IN STATUS: "+response.statusCode());
+		logger.info("SYSTEM LOGGED IN STATUS: "+response.statusCode());
 	}
 
 	private SingletonShare(){

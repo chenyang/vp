@@ -5,17 +5,14 @@ import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
-import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import org.jsoup.Connection;
-import org.jsoup.Jsoup;
-import org.jsoup.Connection.Method;
-import org.jsoup.Connection.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class VentePriveMultiThread {
 	//46348, andre
@@ -25,17 +22,19 @@ public class VentePriveMultiThread {
 	//47090, TI SENTO
 	//46768, Bleu blan rouge
 	private static String[] markCodes = {"46348", "46865", "46582"};
+	private static Logger logger;
 
 
 	public static void main(String[] args) {
+		logger = LoggerFactory.getLogger(VentePriveMultiThread.class);
 
 		//countdown to ventePrive
 		startCountdown(SingletonShare.targetDateStr);
 
-		System.out.println("  SYSTEM CONFIGED: "+"["+SingletonShare.email+"]"+", targetDate:"+SingletonShare.targetDateStr);
-		System.out.println("  SYSTEM START: "+new Date());
+		logger.info("SYSTEM CONFIGED: "+"["+SingletonShare.email+"]"+", targetDate:"+SingletonShare.targetDateStr);
+		logger.info("SYSTEM START: "+new Date());
 		try{
-			
+
 			//login phase
 			SingletonShare.getInstance().loginPhase();
 
@@ -53,11 +52,11 @@ public class VentePriveMultiThread {
 			executor.awaitTermination(60, TimeUnit.SECONDS);
 
 		}catch (InterruptedException | ExecutionException | IOException e) {
-			System.err.println("FATAL ERROR in calling main Business Thread: " +e.toString());
-			e.printStackTrace();
+			logger.error("FATAL ERROR in calling main Business Thread: " +e.toString());
+			logger.error("stack trace: ", e);
 		}finally{
-			System.out.println("  In cart, we have "+SingletonShare.getInstance().getBoughtItems().size()+" items bought");
-			System.out.println("  SYSTEM ENDS: "+new Date());
+			logger.info("In cart, we have "+SingletonShare.getInstance().getBoughtItems().size()+" items bought");
+			logger.info("SYSTEM ENDS: "+new Date());
 		}
 	}
 
@@ -70,7 +69,7 @@ public class VentePriveMultiThread {
 				if(currentDateTime-targetDateTime>0){
 					break;
 				}else{
-					System.out.println("  "+(new Date().toString())+"--SYSTEM COUNT DOWN IN "+(targetDateTime-currentDateTime)/1000+" SECONDS..");
+					logger.info((new Date().toString())+"--SYSTEM COUNT DOWN IN "+(targetDateTime-currentDateTime)/1000+" SECONDS..");
 					if((targetDateTime-currentDateTime)/1000<60){ //less than 1 min
 						Thread.sleep(SingletonShare.SLEEP_COUNTDOWN_SMALL);
 					}else{
@@ -78,7 +77,7 @@ public class VentePriveMultiThread {
 					}
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error("stack trace: ", e);
 			}
 		}
 	}

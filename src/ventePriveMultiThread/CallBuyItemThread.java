@@ -6,6 +6,8 @@ import java.util.Map.Entry;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -16,8 +18,10 @@ public class CallBuyItemThread implements Runnable{
 	private String markCode;
 	private String pid;
 	private String pfid;
+	private Logger logger;
 
 	public CallBuyItemThread(String markCode, String pid, String pfid, MapperPidPfid mapper){
+		logger = LoggerFactory.getLogger(CallBuyItemThread.class);
 		this.markCode = markCode;
 		this.pid = pid;
 		this.pfid = pfid;
@@ -32,7 +36,7 @@ public class CallBuyItemThread implements Runnable{
 			//real buy
 			callWsToBuyItem(markCode, mapper, pid, pfid);
 		} catch (IOException e) {
-			System.err.println("FATAL ERROR in calling callWsToBuyItem: " +e.toString());
+			logger.error("FATAL ERROR in calling callWsToBuyItem: " +e.toString());
 		}
 	}
 
@@ -72,7 +76,7 @@ public class CallBuyItemThread implements Runnable{
 			}else{
 				strOut.append("NO SERVER RESPONSE..");
 			}
-			System.out.println(strOut);
+			logger.info(strOut.toString());
 		}
 	}
 

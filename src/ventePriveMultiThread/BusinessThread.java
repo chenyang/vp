@@ -15,13 +15,17 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class BusinessThread implements Runnable{
 
 	private String markCode;
 	private String productTypeCatgory;
+	private Logger logger;
 
 	public BusinessThread(String markCode, String productTypeCatgory){
+		logger = LoggerFactory.getLogger(BusinessThread.class);
 		this.markCode = markCode;
 		this.productTypeCatgory = productTypeCatgory;
 	};
@@ -31,8 +35,8 @@ public class BusinessThread implements Runnable{
 		try {
 			startBusiness();
 		} catch (IOException | InterruptedException | ExecutionException e) {
-			System.err.println("FATAL ERROR in calling analyzePageCaterogiesElements: " +e.toString());
-			e.printStackTrace();
+			logger.error("FATAL ERROR in calling analyzePageCaterogiesElements: " +e.toString());
+			logger.error("stack trace: ", e);
 		}
 	}
 	
@@ -49,8 +53,8 @@ public class BusinessThread implements Runnable{
 
 	private void analyzePageCaterogiesElements(String markCode, String productTypeCatgory) throws IOException, InterruptedException, ExecutionException{
 		String visitedUrl = "http://fr.vente-privee.com/catalog/"+productTypeCatgory+"/Operation/"+markCode+"/site/1";
-		System.out.println("--Analysising url...");
-		System.out.println("  "+visitedUrl);
+		logger.info("--Analysising url...");
+		logger.info("  "+visitedUrl);
 		Document typeOneMainPage = Jsoup.connect(visitedUrl).get();
 		//Mark's category page
 		Elements lists = typeOneMainPage.select(".menuEV_Container >li");
@@ -68,7 +72,7 @@ public class BusinessThread implements Runnable{
 		executor.shutdown();
 		executor.awaitTermination(60, TimeUnit.SECONDS);
 		//finally
-		//System.out.println("CategoryUrlCriblerThread ends");
+		//out.println("CategoryUrlCriblerThread ends");
 	}
 
 	/**
@@ -79,7 +83,7 @@ public class BusinessThread implements Runnable{
 	 * @throws Exception 
 	 */	
 	private void stuckTimer() throws InterruptedException, IOException, ExecutionException{
-		System.out.println("--Staring stuck timer..");
+		logger.info("--Staring stuck timer..");
 		Connection connection;
 		/** login again **/
 		SingletonShare.getInstance().loginPhase();
@@ -87,9 +91,9 @@ public class BusinessThread implements Runnable{
 		if(!SingletonShare.getInstance().getBoughtItems().isEmpty()){
 			MapperPidPfid mapper = SingletonShare.getInstance().getBoughtItems().peek();
 			//increase 1 item
-			System.out.println("  Waiting for "+(SingletonShare.SLEEP_STUCKER/1000)+" seds to increase item to keep alive session..");
+			logger.debug("Waiting for "+(SingletonShare.SLEEP_STUCKER/1000)+" seds to increase item to keep alive session..");
 			Thread.sleep(SingletonShare.SLEEP_STUCKER);
-			System.out.println("  Increasing item: pid:"+mapper.getPid()+", pfid:"+mapper.getPfid()+", markcode:"+mapper.getMarkCode());
+			logger.info("Increasing item: pid:"+mapper.getPid()+", pfid:"+mapper.getPfid()+", markcode:"+mapper.getMarkCode());
 			connection = Jsoup.connect(SingletonShare.urlIncreseItem);
 			for (Entry<String, String> cookie : SingletonShare.getInstance().getLoginCookies().entrySet()) {
 				connection.cookie(cookie.getKey(), cookie.getValue());
@@ -102,9 +106,9 @@ public class BusinessThread implements Runnable{
 			.post();
 
 			//then decrease 1 item in order not to bother other clients..
-			System.out.println("  Waiting for "+(SingletonShare.SLEEP_STUCKER/1000)+" seds to decrease item to keep session alive..");
+			logger.debug("  Waiting for "+(SingletonShare.SLEEP_STUCKER/1000)+" seds to decrease item to keep session alive..");
 			Thread.sleep(SingletonShare.SLEEP_STUCKER);
-			System.out.println("  Decreasing item: pid:"+mapper.getPid()+", pfid:"+mapper.getPfid()+", markcode:"+mapper.getMarkCode());
+			logger.info("  Decreasing item: pid:"+mapper.getPid()+", pfid:"+mapper.getPfid()+", markcode:"+mapper.getMarkCode());
 			connection = Jsoup.connect(SingletonShare.urlDecreaseItem);
 			for (Entry<String, String> cookie : SingletonShare.getInstance().getLoginCookies().entrySet()) {
 				connection.cookie(cookie.getKey(), cookie.getValue());
@@ -116,7 +120,7 @@ public class BusinessThread implements Runnable{
 			.ignoreContentType(true)
 			.post();
 		}else{
-			System.out.println("--BUSINESS ERROR NO ITEMS CAN BE FOUND, will wait for "+(SingletonShare.SLEEP_ERROR/1000)+" seds and restart..");
+			logger.warn("--BUSINESS ERROR NO ITEMS CAN BE FOUND, will wait for "+(SingletonShare.SLEEP_ERROR/1000)+" seds and restart..");
 			Thread.sleep(SingletonShare.SLEEP_ERROR);
 			//restartBusiness until success
 			startBusiness();

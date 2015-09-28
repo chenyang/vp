@@ -15,13 +15,17 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ArticleUrlCriblerThread implements Runnable{
 
 	private Element artEl;
 	private String markCode;
+	private Logger logger;
 
 	public ArticleUrlCriblerThread(Element el, String markCode){
+		logger = LoggerFactory.getLogger(ArticleUrlCriblerThread.class);
 		this.artEl = el;
 		this.markCode = markCode;
 	}
@@ -30,7 +34,7 @@ public class ArticleUrlCriblerThread implements Runnable{
 		String href4Express = artEl.select(".infoExpressBt").attr("hrefExpress");
 		String[] temps = href4Express.split("/");
 		String pfid = temps[temps.length-1]; // get product family id
-		//System.out.println("  "+href4Express+", "+pfid);
+		logger.debug(href4Express+", "+pfid);
 
 		//this block take some time..
 		//element express page
@@ -81,7 +85,7 @@ public class ArticleUrlCriblerThread implements Runnable{
 		try {
 			analyzePageExpressElements();
 		} catch (IOException | InterruptedException| ExecutionException e) {
-			System.err.println("FATAL ERROR in calling analyzePageExpressElements: " +e.toString());
+			logger.error("FATAL ERROR in calling analyzePageExpressElements: " +e.toString());
 		} 
 	}
 

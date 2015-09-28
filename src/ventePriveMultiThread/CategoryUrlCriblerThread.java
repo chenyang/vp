@@ -15,20 +15,24 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CategoryUrlCriblerThread implements Runnable{
 
 	private Element el;
 	private String markCode;
-
+	private Logger logger;
+	
 	public CategoryUrlCriblerThread(Element el, String markCode){
+		logger = LoggerFactory.getLogger(CategoryUrlCriblerThread.class);
 		this.el = el;
 		this.markCode = markCode;
 	}
 
 	private void analyzePageArticlesElements() throws InterruptedException, IOException, ExecutionException{
 		String href4Article = el.select("a").attr("href");
-		//System.out.println("  "+href4Article);
+		logger.debug(href4Article);
 		Document typeOneArticlePage;
 		typeOneArticlePage = Jsoup.connect("http://fr.vente-privee.com"+href4Article).get();
 		//Category's element page
@@ -47,7 +51,7 @@ public class CategoryUrlCriblerThread implements Runnable{
 		executor.shutdown();
 		executor.awaitTermination(60, TimeUnit.SECONDS);
 		//finally
-		//System.out.println("  ArticleUrlCriblerThread ends");
+		logger.debug("ArticleUrlCriblerThread ends");
 	}
 
 	@Override
@@ -55,8 +59,8 @@ public class CategoryUrlCriblerThread implements Runnable{
 		try {
 			analyzePageArticlesElements();
 		} catch (InterruptedException | IOException | ExecutionException e) {
-			System.err.println("FATAL ERROR in calling analyzePageArticlesElements: " +e.toString());
-			e.printStackTrace();
+			logger.error("FATAL ERROR in calling analyzePageArticlesElements: " +e.toString());
+			logger.error("stack trace: ", e);
 		}
 	}
 }
