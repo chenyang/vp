@@ -21,7 +21,7 @@ public class VentePriveMultiThread {
 	//46582, ANTONIO CROCE
 	//47090, TI SENTO
 	//46768, Bleu blan rouge
-	private static String[] markCodes = {"46348", "46865", "46582"};
+	private static String[] markCodes = {"43689", "47817", "46367"};
 	private static Logger logger;
 
 

@@ -35,19 +35,19 @@ public class CallBuyItemThread implements Runnable{
 			//SingletonShare.getInstance().addOneItemToBoughtItems(mapper);			
 			//real buy
 			callWsToBuyItem(markCode, mapper, pid, pfid);
-		} catch (IOException e) {
-			logger.error("FATAL ERROR in calling callWsToBuyItem", e.toString());
+		} catch (IOException | InterruptedException e) {
+			logger.error("FATAL ERROR in calling callWsToBuyItem: "+e.toString());
 		}
 	}
 
-	private void callWsToBuyItem(String markCode, MapperPidPfid mapper, String pid, String pfid) throws IOException{
+	private void callWsToBuyItem(String markCode, MapperPidPfid mapper, String pid, String pfid) throws IOException, InterruptedException{
 		//REAL invoke ws call
 		if(!pid.equals(pfid)){ //just when PID!=PFID
 
 			StringBuffer strOut = new StringBuffer();
-			strOut.append("  Analyzed Mapping: PID="+pid+", PFID="+pfid+", MARK code="+markCode+"; ");
+			strOut.append("Analyzed Mapping: PID="+pid+", PFID="+pfid+", MARK code="+markCode+"; ");
 			//strOut.append("  Waiting for "+(SingletonShare.SLEEP_BUY)+" mills to call VP ws..;  ");
-			//Thread.sleep(SingletonShare.SLEEP_BUY);
+			Thread.sleep(SingletonShare.SLEEP_BUY);
 			Connection connection = Jsoup.connect("http://fr.vente-privee.com/cart/CartServices/AddToCartOrCanBeReopened");
 			for (Entry<String, String> cookie : SingletonShare.getInstance().getLoginCookies().entrySet()) {
 				connection.cookie(cookie.getKey(), cookie.getValue());

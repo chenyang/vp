@@ -51,9 +51,9 @@ public class BusinessThread implements Runnable{
 	}
 
 	private void analyzePageCaterogiesElements(String markCode, String productTypeCatgory) throws IOException, InterruptedException, ExecutionException{
-		String visitedUrl = "http://fr.vente-privee.com/catalog/"+productTypeCatgory+"/Operation/"+markCode+"/site/1";
-		logger.info("Analyzing url: "+visitedUrl+" ..");
-		Document typeOneMainPage = Jsoup.connect(visitedUrl).get();
+		String href4Category = "http://fr.vente-privee.com/catalog/"+productTypeCatgory+"/Operation/"+markCode+"/site/1";
+		logger.debug("href4Category: "+href4Category);
+		Document typeOneMainPage = Jsoup.connect(href4Category).get();
 		//Mark's category page
 		Elements lists = typeOneMainPage.select(".menuEV_Container >li");
 		if(!lists.isEmpty()){

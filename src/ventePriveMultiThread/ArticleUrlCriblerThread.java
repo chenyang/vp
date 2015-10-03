@@ -34,7 +34,7 @@ public class ArticleUrlCriblerThread implements Runnable{
 		String href4Express = artEl.select(".infoExpressBt").attr("hrefExpress");
 		String[] temps = href4Express.split("/");
 		String pfid = temps[temps.length-1]; // get product family id
-		logger.debug(href4Express+", "+pfid);
+		logger.debug("href4Express: "+href4Express+", with PFID:"+pfid);
 
 		//this block take some time..
 		//element express page

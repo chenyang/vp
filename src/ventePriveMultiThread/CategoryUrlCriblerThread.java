@@ -32,7 +32,7 @@ public class CategoryUrlCriblerThread implements Runnable{
 
 	private void analyzePageArticlesElements() throws InterruptedException, IOException, ExecutionException{
 		String href4Article = el.select("a").attr("href");
-		logger.debug(href4Article);
+		logger.debug("href4Article: "+href4Article);
 		Document typeOneArticlePage;
 		typeOneArticlePage = Jsoup.connect("http://fr.vente-privee.com"+href4Article).get();
 		//Category's element page

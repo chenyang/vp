@@ -19,7 +19,7 @@ public class SingletonShare {
 	private Queue<MapperPidPfid> boughtItems;
 	private Map<String, String> loginCookies;
 
-	public static final int SLEEP_BUY = 1; //buy gap..
+	public static final int SLEEP_BUY = 5; //buy gap..
 	public static final int SLEEP_STUCKER = 1000*60;// 1 Min
 	public static final int SLEEP_ERROR = 1000*30;//30s
 	public static final String urlIncreseItem = "https://secure.fr.vente-privee.com/cart/Widgets/Cart/IncreaseProductQuantity";
