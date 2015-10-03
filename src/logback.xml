@@ -6,11 +6,8 @@
       <Pattern>%d{HH:mm:ss.SSS} %-5level [%-20thread] %-30logger{26} - %msg%n</Pattern>
     </encoder>
   </appender>
-   
-  <logger name="ventePriverMultiThread" level="INFO"/>
-   
  
-  <root level="DEBUG">
+  <root level="INFO">
     <appender-ref ref="STDOUT" />
   </root>
 </configuration>
